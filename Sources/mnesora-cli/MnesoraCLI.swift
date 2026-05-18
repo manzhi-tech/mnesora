@@ -6,10 +6,11 @@ struct MnesoraCLI: ParsableCommand {
     static let configuration = CommandConfiguration(
         commandName: "mnesora-cli",
         abstract: "Inspect / manipulate a mnesora card store.",
-        version: Mnesora.version
+        version: Mnesora.version,
+        subcommands: [
+            InitCommand.self,
+            CardListCommand.self,
+            CardShowCommand.self,
+        ]
     )
-
-    func run() throws {
-        print("mnesora-cli \(Mnesora.version)")
-    }
 }
