@@ -29,6 +29,8 @@ final class CardTests: XCTestCase {
 
         body
         """
-        XCTAssertThrowsError(try Card.from(markdown: md, path: "orphan.md"))
+        XCTAssertThrowsError(try Card.from(markdown: md, path: "orphan.md")) { error in
+            XCTAssertEqual(error as? Card.CardError, .missingTemplateField)
+        }
     }
 }
