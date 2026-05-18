@@ -45,7 +45,9 @@ final class CardStoreTests: XCTestCase {
             )
         )
         try store.create(card)
-        XCTAssertThrowsError(try store.create(card))
+        XCTAssertThrowsError(try store.create(card)) { error in
+            XCTAssertEqual(error as? CardStore.CardStoreError, .alreadyExists("x.md"))
+        }
     }
 
     func testUpdateOverwrites() throws {
@@ -78,7 +80,9 @@ final class CardStoreTests: XCTestCase {
         )
         try store.create(card)
         try store.delete("p.md")
-        XCTAssertThrowsError(try store.read("p.md"))
+        XCTAssertThrowsError(try store.read("p.md")) { error in
+            XCTAssertEqual(error as? CardStore.CardStoreError, .notFound("p.md"))
+        }
     }
 
     func testRejectsPathTraversal() {
@@ -88,6 +92,8 @@ final class CardStoreTests: XCTestCase {
             template: "preference",
             frontmatter: Frontmatter(fields: ["template": "preference", "domain": "x", "value": "y"], body: "")
         )
-        XCTAssertThrowsError(try store.create(badCard))
+        XCTAssertThrowsError(try store.create(badCard)) { error in
+            XCTAssertEqual(error as? CardStore.CardStoreError, .pathTraversal)
+        }
     }
 }

@@ -53,7 +53,11 @@ public struct CardStore {
 
     public func delete(_ path: String) throws {
         let url = try resolved(path)
-        try FileManager.default.removeItem(at: url)
+        let fm = FileManager.default
+        guard fm.fileExists(atPath: url.path) else {
+            throw CardStoreError.notFound(path)
+        }
+        try fm.removeItem(at: url)
     }
 
     public func list() throws -> [String] {
