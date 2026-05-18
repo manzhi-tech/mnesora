@@ -1,6 +1,3 @@
-import Foundation
-import Yams
-
 public struct Template {
     public let name: String
     public let requiredFields: [String]

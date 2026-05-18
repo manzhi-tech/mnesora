@@ -1,5 +1,3 @@
-import Foundation
-
 public struct Card {
     public let path: String          // relative to store root, e.g. "people/wife.md"
     public let template: String      // "person", "project", ...

@@ -10,7 +10,9 @@ public struct CardStore {
     }
 
     public init(root: URL) {
-        self.root = root
+        // Normalize symlinks once so list() path-stripping works on macOS
+        // where /var -> /private/var and /tmp -> /private/tmp.
+        self.root = root.resolvingSymlinksInPath()
     }
 
     private func resolved(_ path: String) throws -> URL {

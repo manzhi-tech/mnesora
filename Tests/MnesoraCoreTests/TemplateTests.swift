@@ -48,7 +48,7 @@ final class TemplateTests: XCTestCase {
             optionalFields: [],
             bodySkeleton: ""
         )
-        var card = Card(
+        let card = Card(
             path: "people/wife.md",
             template: "person",
             frontmatter: Frontmatter(
@@ -63,6 +63,5 @@ final class TemplateTests: XCTestCase {
             }
             XCTAssertEqual(missing, ["relation"])
         }
-        _ = card  // silence unused-mutable warning
     }
 }
