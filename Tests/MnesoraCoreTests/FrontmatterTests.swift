@@ -28,11 +28,38 @@ final class FrontmatterTests: XCTestCase {
 
     func testParseFailsWithNoFrontmatter() {
         let source = "# Just a heading\n\nNo frontmatter here.\n"
-        XCTAssertThrowsError(try Frontmatter.parse(source))
+        XCTAssertThrowsError(try Frontmatter.parse(source)) { error in
+            XCTAssertEqual(error as? Frontmatter.ParseError, .missingOpeningDelimiter)
+        }
     }
 }
 
 extension FrontmatterTests {
+    func testParseFailsWithMissingClosingDelimiter() {
+        // Opens with --- but never closes
+        let source = "---\ntemplate: person\nname: 妻子\nbody-without-close"
+        XCTAssertThrowsError(try Frontmatter.parse(source)) { error in
+            XCTAssertEqual(error as? Frontmatter.ParseError, .missingClosingDelimiter)
+        }
+    }
+
+    func testParseFailsWithInvalidYAML() {
+        // Opens and closes properly, but YAML body is malformed (unclosed bracket)
+        let source = """
+        ---
+        template: [unclosed
+        ---
+
+        body
+        """
+        XCTAssertThrowsError(try Frontmatter.parse(source)) { error in
+            guard case Frontmatter.ParseError.invalidYAML = error else {
+                XCTFail("expected .invalidYAML, got \(error)")
+                return
+            }
+        }
+    }
+
     func testSerializeRoundtrip() throws {
         let original = """
         ---
