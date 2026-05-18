@@ -85,6 +85,34 @@ final class CardStoreTests: XCTestCase {
         }
     }
 
+    func testListReturnsCleanRelativePaths() throws {
+        // Regression: previously list() did string-replace of root.path on
+        // fileURL.path, but on macOS FileManager.enumerator yields URLs whose
+        // path is /private/var/... while CardStore.root.path was /var/...,
+        // producing garbled output like /privatetemplates/wife.md.
+        let store = CardStore(root: tmpDir)
+        let a = Card(
+            path: "people/wife.md",
+            template: "person",
+            frontmatter: Frontmatter(
+                fields: ["template": "person", "name": "妻子", "relation": "spouse"],
+                body: ""
+            )
+        )
+        let b = Card(
+            path: "stances/typescript.md",
+            template: "stance",
+            frontmatter: Frontmatter(
+                fields: ["template": "stance", "topic": "ts", "position": "default"],
+                body: ""
+            )
+        )
+        try store.create(a)
+        try store.create(b)
+        let paths = try store.list().sorted()
+        XCTAssertEqual(paths, ["people/wife.md", "stances/typescript.md"])
+    }
+
     func testRejectsPathTraversal() {
         let store = CardStore(root: tmpDir)
         let badCard = Card(
