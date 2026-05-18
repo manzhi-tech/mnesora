@@ -1,0 +1,48 @@
+# OS
+.DS_Store
+Thumbs.db
+.directory
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+logs/
+
+# Environment / secrets
+.env
+.env.local
+.env.*.local
+
+# Node
+node_modules/
+dist/
+build/
+.cache/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Rust
+target/
+
+# Test / coverage
+coverage/
+.coverage
+htmlcov/
+
+# Mnesora — local user data should NEVER be committed
+.mnesora/
+*.mnesora.local
+
+# Misc generated
+*.tmp
+*.bak
