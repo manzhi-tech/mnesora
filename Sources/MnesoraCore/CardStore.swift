@@ -10,9 +10,7 @@ public struct CardStore {
     }
 
     public init(root: URL) {
-        // Normalize symlinks once so list() path-stripping works on macOS
-        // where /var -> /private/var and /tmp -> /private/tmp.
-        self.root = root.resolvingSymlinksInPath()
+        self.root = root
     }
 
     private func resolved(_ path: String) throws -> URL {
@@ -67,10 +65,15 @@ public struct CardStore {
         guard let enumerator = fm.enumerator(at: root, includingPropertiesForKeys: nil) else {
             return []
         }
+        // Standardize both root and file paths so macOS symlink asymmetry
+        // (/var <-> /private/var, /tmp <-> /private/tmp) collapses to one form.
+        let rootStd = (root.path as NSString).standardizingPath
         var out: [String] = []
         for case let fileURL as URL in enumerator where fileURL.pathExtension == "md" {
-            let rel = fileURL.path.replacingOccurrences(of: root.path + "/", with: "")
-            out.append(rel)
+            let fileStd = (fileURL.path as NSString).standardizingPath
+            if fileStd.hasPrefix(rootStd + "/") {
+                out.append(String(fileStd.dropFirst(rootStd.count + 1)))
+            }
         }
         return out
     }
